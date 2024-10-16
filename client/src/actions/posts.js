@@ -2,9 +2,9 @@ import { FETCH_ALL,FETCH_BY_SEARCH, CREATE, UPDATE, DELETE, LIKE } from '../cons
 import * as api from '../api';
 
 //action creators(functions that returns actions)
-export const getPosts = () => async (dispatch)=>{//async (dispatch) here is part of redux to tackle asynchronization.
+export const getPosts = (page) => async (dispatch)=>{//async (dispatch) here is part of redux to tackle asynchronization.
     try{
-        const { data } = await api.fetchPosts();
+        const { data } = await api.fetchPosts(page);
 
         dispatch({type:FETCH_ALL, payload:data});
     }   

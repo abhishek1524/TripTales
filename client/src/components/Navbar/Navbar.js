@@ -7,8 +7,8 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import decode from 'jwt-decode';
 
-import TripTales_text  from '../../images/TripTales_text.png';
-import TripTales_logo  from '../../images/TripTales_logo.png';
+import TripTalesText  from '../../images/TripTalesText.webp';
+import TripTalesLogo  from '../../images/TripTalesLogo.png';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 const Navbar =  ()=>{
     const classes = useStyles();
@@ -37,10 +37,10 @@ const Navbar =  ()=>{
     
     return(
         <AppBar className={classes.appBar} position="static" color="inherit">
-        <div className={classes.brandContainer}>
-        <Typography component={Link} to="/" className={classes.heading} variant="h2" align="center">TripTales</Typography>
-        <img className={classes.image} src={TripTales} alt="TripTales" height="60" />
-        </div>
+        <Link to="/" className={classes.brandContainer}>
+        <img src={TripTalesText} alt='icon' height="45px" />
+        <img className={classes.image} src={TripTalesLogo} alt="icon" height="40px" />
+        </Link>
 
         <Toolbar className={classes.toolbar}>
             {user ? (
