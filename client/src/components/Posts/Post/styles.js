@@ -21,6 +21,11 @@ export default makeStyles({
     height: '100%',
     position: 'relative',
   },
+  buttonBase: { // Add this style
+    display: 'block',
+    textAlign: 'initial',
+    width: '100%', // Ensure it takes up full width of the card
+  },
   overlay: {
     position: 'absolute',
     top: '20px',
