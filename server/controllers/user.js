@@ -45,5 +45,3 @@ export const signup = async (req, res) =>{
     }
 
 }
-
-//continue video with 4:01 hour.

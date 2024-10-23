@@ -18,24 +18,71 @@ export const getPosts= async(req,res)=>{
     }
 }
 
-export  const getPostsBySearch = async(req,res)=>{
+export const getPost = async(req,res) => {
+    const{ id } = req.params;
 
-    const  { searchQuery, tags } = req.query;
     try{
-        const title = new RegExp(searchQuery, 'i');
-
-        const posts = await PostMessage.find({ 
-            $or: [
-                {title},
-                {tags: {$in: tags.split(',')}} 
-            ]});
-
-        res.json({ data: posts});
-    }
-    catch(error){
-        res.status(404).json({ message: error.message })
+        const post = await PostMessage.findById(id);
+        res.status(200).json(post);
+    } catch(error){
+        res.status(404).json({ message: error.message});
     }
 }
+
+export const getPostsBySearch = async (req, res) => {
+    const { searchQuery, tags, page } = req.query; // also extract page number
+
+    try {
+        const title = new RegExp(searchQuery, 'i');
+        const LIMIT = 8;  // Limit the number of posts per page
+        const startIndex = (Number(page) - 1) * LIMIT;  // Calculate the starting index for pagination
+
+        let posts = [];
+        let total = 0;
+
+        // Handle different search conditions (searchQuery, tags, or both)
+        if (searchQuery && tags) {
+            total = await PostMessage.countDocuments({ 
+                $or: [
+                    { title },
+                    { tags: { $in: tags.split(',') } }
+                ] 
+            });
+            posts = await PostMessage.find({
+                $or: [
+                    { title },
+                    { tags: { $in: tags.split(',') } }
+                ]
+            })
+            .sort({ _id: -1 })  // Sort by newest
+            .limit(LIMIT)
+            .skip(startIndex);  // Pagination using limit and skip
+        } else if (searchQuery) {
+            total = await PostMessage.countDocuments({ title });
+            posts = await PostMessage.find({ title })
+            .sort({ _id: -1 })
+            .limit(LIMIT)
+            .skip(startIndex);
+        } else if (tags) {
+            total = await PostMessage.countDocuments({ tags: { $in: tags.split(',') } });
+            posts = await PostMessage.find({ tags: { $in: tags.split(',') } })
+            .sort({ _id: -1 })
+            .limit(LIMIT)
+            .skip(startIndex);
+        }
+
+        res.status(200).json({
+            data: posts,
+            currentPage: Number(page),
+            numberOfPages: Math.ceil(total / LIMIT)
+        });
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+
+
 export const createPost=async(req,res)=>{
     const post = req.body;                 //new post that we receive from client side.
     const newPost = new PostMessage({ ...post, creator: req.userId, createdAt: new Date().toISOString()}); //sending value received from client to model.

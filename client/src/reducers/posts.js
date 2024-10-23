@@ -1,5 +1,5 @@
 import { act } from 'react';
-import { FETCH_ALL, CREATE, UPDATE, START_LOADING, END_LOADING, DELETE, LIKE, FETCH_BY_SEARCH } from '../constants/actionTypes';
+import { FETCH_ALL, CREATE, UPDATE, FETCH_POST, START_LOADING, END_LOADING, DELETE, LIKE, FETCH_BY_SEARCH } from '../constants/actionTypes';
 
 const initialState = {
   posts: [],
@@ -23,7 +23,13 @@ export default (state = { isLoading: true, posts: []}, action) => {
     case FETCH_BY_SEARCH:
       return { 
         ...state, 
-        posts: action.payload 
+        posts: action.payload,
+        isLoading: false
+      };
+    case FETCH_POST:
+      return { 
+        ...state, 
+        post: action.payload 
       };
     case CREATE:
       return {

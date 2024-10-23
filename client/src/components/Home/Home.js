@@ -4,7 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ChipInput from 'material-ui-chip-input';
 import Posts from '../Posts/Posts';
 import Form from '../Form/Form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'; // Added useSelector to get the numberOfPages from state
 import { getPosts, getPostsBySearch } from '../../actions/posts';
 import Paginate from '../Pagination';
 import useStyles from './styles';
@@ -24,20 +24,23 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState([]);
 
-  // Fetch all posts only if there's no search query or tags
-  /*useEffect(() => {
+  // Get numberOfPages from state (assuming Redux is storing it)
+  const { numberOfPages } = useSelector((state) => state.posts);
+
+  // Fetch posts only when there's no search query or tags
+  useEffect(() => {
     if (!searchQuery && tags.length === 0) {
-      dispatch(getPosts(page));
+      dispatch(getPosts(page));  // Fetch posts for the current page
     }
-  }, [dispatch, page, searchQuery, tags.length]);*/
+  }, [dispatch, page, searchQuery, tags.length]);
 
   const searchPost = () => {
     if (search.trim() || tags.length > 0) {
       dispatch(getPostsBySearch({ search, tags: tags.join(',') }));
-      history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`);
+      history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.length ? tags.join(',') : ''}`);
     } else {
       history.push('/');
-      dispatch(getPosts());  // Ensure that all posts are fetched when search bar is cleared
+      dispatch(getPosts());  // Fetch all posts when search is cleared
     }
   };
 
@@ -55,7 +58,7 @@ const Home = () => {
       <Container maxWidth="xl">
         <Grid container justifyContent="space-between" alignItems="stretch" spacing={3} className={classes.gridContainer}>
           <Grid item xs={12} sm={5} md={9}>
-            <Posts setCurrentId={setCurrentId} /> {/* No need to pass posts, it's handled in Redux */}
+            <Posts setCurrentId={setCurrentId} /> {/* Redux handles posts */}
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <AppBar className={classes.appBarSearch} position="static" color="inherit">
@@ -84,7 +87,7 @@ const Home = () => {
             <Form currentId={currentId} setCurrentId={setCurrentId} />
             {(!searchQuery && !tags.length) && (
               <Paper elevation={6} className={classes.pagination}>
-                <Paginate page={page} />
+                <Paginate page={page} numberOfPages={numberOfPages} />  {/* Pass numberOfPages */}
               </Paper>
             )}
           </Grid>

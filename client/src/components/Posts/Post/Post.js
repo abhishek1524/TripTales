@@ -82,3 +82,5 @@ const Post = ({ post, setCurrentId }) => {
 };
 
 export default Post;
+
+//continue from 6:12
